@@ -16,8 +16,12 @@ RUN cmake -B build -DCMAKE_BUILD_TYPE=Release -DLLAMA_CURL=ON \
 # Runtime-Stage
 FROM debian:trixie-slim
 
-RUN apt update && apt install -y --no-install-recommends libcurl4 libgomp1 ca-certificates \
+RUN apt update && apt install -y --no-install-recommends libcurl4 libgomp1 ca-certificates wget \
   && rm -rf /var/lib/apt/lists/*
+
+# Beispielmodell herunterladen
+RUN mkdir -p /models && \
+  wget -O /models/model.gguf https://huggingface.co/GnLOLot/MiniCPM5-1B-Claude-Opus-Fable5-V2-Thinking-GGUF/resolve/main/MiniCPM5-1B-Claude-Opus-Fable5-V2-Thinking-Q8_0.gguf?download=true
 
 COPY --from=build /opt/llama.cpp/build/bin/llama-server /usr/local/bin/
 COPY --from=build /opt/llama.cpp/build/bin/llama-cli /usr/local/bin/
